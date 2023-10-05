@@ -1,6 +1,6 @@
 from http import HTTPStatus
 import json
-from repository.db import insere_status, obtem_status_by_name, obtem_todos_status
+from repository.db import insere_status, obtem_status_by_name, obtem_todos_status, lista_status_por_id, deleta_status_por_id
 from aws_lambda_powertools.event_handler import (
     Response,
     content_types,
@@ -10,6 +10,21 @@ from aws_lambda_powertools.event_handler import (
 class status_service:
     def lista_todos_status():
         result = obtem_todos_status()
+
+        retorno = []
+
+        for res in result:
+            retorno.append({"id": res[0], "status": res[1]})
+
+
+        return Response(
+            status_code=HTTPStatus.OK.value,
+            content_type=content_types.APPLICATION_JSON,
+            body=retorno,
+        )
+    
+    def lista_status_por_id(id):
+        result = lista_status_por_id(id=id)
 
         retorno = []
 
@@ -43,3 +58,18 @@ class status_service:
         )
         # else:
         #     # se existir, retorna erro
+
+
+    def deleta_status_por_id(id):
+        result = deleta_status_por_id(id=id)
+
+        retorno = []
+
+        for res in result:
+            retorno.append({"id": res[0], "status": res[1]})
+
+
+        return Response(
+            status_code=HTTPStatus.NO_CONTENT.value,
+            content_type=content_types.APPLICATION_JSON
+        )

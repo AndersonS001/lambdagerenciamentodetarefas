@@ -46,6 +46,17 @@ def obtem_todos_status():
     except:
         raise
 
+def lista_status_por_id(id):
+    try:
+        rows = cursor.execute(
+            "SELECT * FROM TB_STATUS WHERE ID_STATUS = ?",
+            (id,),
+        ).fetchall()
+
+        return rows
+    except:
+        raise
+
 
 def obtem_status_by_name(status):
     try:
@@ -55,5 +66,14 @@ def obtem_status_by_name(status):
         ).fetchall()
 
         return rows
+    except:
+        raise
+
+def deleta_status_por_id(id):
+    try:
+        rows = cursor.execute(
+            "DELETE FROM TB_STATUS WHERE ID_STATUS = ?",
+            (id,),
+        )
     except:
         raise

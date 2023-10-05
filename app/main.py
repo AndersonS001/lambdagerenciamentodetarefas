@@ -9,12 +9,20 @@ logger = Logger()
 
 
 @app.get("/status")
-def get():
+def lista_todos_status():
     return status_service.lista_todos_status()
 
+@app.get("/status/<id>")
+def lista_status_por_id(id: str):
+    return status_service.lista_status_por_id(id=id)
+
 @app.post("/status")
-def post():
+def create_status():
     return status_service.create_status(app.current_event.body)
+
+@app.delete("/status/<id>")
+def deleta_status_por_id(id: str):
+    return status_service.deleta_status_por_id(id=id)
 
 @app.put(".+")
 def put():
