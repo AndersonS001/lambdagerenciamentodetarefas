@@ -1,7 +1,19 @@
+from dataclasses import dataclass
 from main import lambda_handler
+from aws_lambda_powertools.utilities.typing import LambdaContext
 
 
-def debug():
+def lambda_context():
+    @dataclass
+    class LambdaContext:
+        function_name: str = "test"
+        memory_limit_in_mb: int = 128
+        invoked_function_arn: str = "arn:aws:lambda:eu-west-1:123456789012:function:test"
+        aws_request_id: str = "da658bd3-2d6f-4e7b-8ec2-937234644fdc"
+
+    return LambdaContext()
+
+def debug_get():
     event = {
         "version": "2.0",
         "routeKey": "$default",
@@ -40,7 +52,7 @@ def debug():
             "domainPrefix": "xxxxxxxxxxxxx",
             "http": {
                 "method": "GET",
-                "path": "/todos",
+                "path": "/status",
                 "protocol": "HTTP/1.1",
                 "sourceIp": "123.123.123.123",
                 "userAgent": "Custom User Agent",
@@ -54,8 +66,59 @@ def debug():
         "isBase64Encoded": False,
     }
 
-    lambda_handler(event, "")
+    res = lambda_handler(event=event, context="")
+    print(res)
 
 
-if __name__ == "__main__":    
-    debug()
+def debug_post_status():
+    event = {
+        "path_received": {
+            "version": "2.0",
+            "routeKey": "$default",
+            "rawPath": "/status",
+            "rawQueryString": "",
+            "headers": {
+                "content-length": "31",
+                "x-amzn-tls-version": "TLSv1.2",
+                "x-forwarded-proto": "https",
+                "postman-token": "44fd2685-bd9b-4cac-839a-73b87568802e",
+                "x-forwarded-port": "443",
+                "x-forwarded-for": "200.232.224.130",
+                "accept": "*/*",
+                "x-amzn-tls-cipher-suite": "ECDHE-RSA-AES128-GCM-SHA256",
+                "x-amzn-trace-id": "Root=1-651e05c8-240a2f734cfe14563bf2c428",
+                "host": "u546ua5ofaf242hvuf64dwl4240zxgys.lambda-url.sa-east-1.on.aws",
+                "content-type": "application/json",
+                "accept-encoding": "gzip, deflate, br",
+                "user-agent": "PostmanRuntime/7.33.0",
+            },
+            "requestContext": {
+                "accountId": "anonymous",
+                "apiId": "u546ua5ofaf242hvuf64dwl4240zxgys",
+                "domainName": "u546ua5ofaf242hvuf64dwl4240zxgys.lambda-url.sa-east-1.on.aws",
+                "domainPrefix": "u546ua5ofaf242hvuf64dwl4240zxgys",
+                "http": {
+                    "method": "POST",
+                    "path": "/status",
+                    "protocol": "HTTP/1.1",
+                    "sourceIp": "200.232.224.130",
+                    "userAgent": "PostmanRuntime/7.33.0",
+                },
+                "requestId": "c51a9c55-c2e4-4d13-988c-b07f9eec6676",
+                "routeKey": "$default",
+                "stage": "$default",
+                "time": "05/Oct/2023:00:39:36 +0000",
+                "timeEpoch": 1696466376988,
+            },
+            "body": '{\r\n    "status": "CANCELADO"\r\n}',
+            "isBase64Encoded": False,
+        }
+    }
+
+
+    lambda_handler(event=event, context=lambda_context())
+
+
+if __name__ == "__main__":
+    debug_get()
+    # debug_post_status()
