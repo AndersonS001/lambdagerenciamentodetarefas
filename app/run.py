@@ -1,17 +1,19 @@
-from dataclasses import dataclass
+from collections import namedtuple
 from main import lambda_handler
-from aws_lambda_powertools.utilities.typing import LambdaContext
 
 
 def lambda_context():
-    @dataclass
-    class LambdaContext:
-        function_name: str = "test"
-        memory_limit_in_mb: int = 128
-        invoked_function_arn: str = "arn:aws:lambda:eu-west-1:123456789012:function:test"
-        aws_request_id: str = "da658bd3-2d6f-4e7b-8ec2-937234644fdc"
+    context = {
+        "function_name": "test",
+        "memory_limit_in_mb": 128,
+        "invoked_function_arn": "arn:aws:lambda:eu-west-1:123456789012:function:test",
+        "aws_request_id": "da658bd3-2d6f-4e7b-8ec2-937234644fdc",
+    }
 
-    return LambdaContext()
+    named_context = namedtuple("LambdaContext", context.keys())(*context.values())
+
+    return named_context
+
 
 def debug_get():
     event = {
@@ -52,7 +54,7 @@ def debug_get():
             "domainPrefix": "xxxxxxxxxxxxx",
             "http": {
                 "method": "GET",
-                "path": "/status",
+                "path": "/",
                 "protocol": "HTTP/1.1",
                 "sourceIp": "123.123.123.123",
                 "userAgent": "Custom User Agent",
@@ -66,7 +68,10 @@ def debug_get():
         "isBase64Encoded": False,
     }
 
-    res = lambda_handler(event=event, context="")
+    context = lambda_context()
+
+
+    res = lambda_handler(event=event, context=context)
     print(res)
 
 
@@ -99,7 +104,7 @@ def debug_post_status():
                 "domainPrefix": "u546ua5ofaf242hvuf64dwl4240zxgys",
                 "http": {
                     "method": "POST",
-                    "path": "/status",
+                    "path": "/",
                     "protocol": "HTTP/1.1",
                     "sourceIp": "200.232.224.130",
                     "userAgent": "PostmanRuntime/7.33.0",
@@ -115,8 +120,9 @@ def debug_post_status():
         }
     }
 
+    context = lambda_context()
 
-    lambda_handler(event=event, context=lambda_context())
+    lambda_handler(event=event, context=context)
 
 
 if __name__ == "__main__":

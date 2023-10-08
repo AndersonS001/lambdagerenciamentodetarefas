@@ -63,12 +63,6 @@ class status_service:
     def deleta_status_por_id(id):
         result = deleta_status_por_id(id=id)
 
-        retorno = []
-
-        for res in result:
-            retorno.append({"id": res[0], "status": res[1]})
-
-
         return Response(
             status_code=HTTPStatus.NO_CONTENT.value,
             content_type=content_types.APPLICATION_JSON
