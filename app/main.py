@@ -49,6 +49,6 @@ def delete(id: str):
     return tarefa_service.deleta_tarefa(id=id)
 
 
-# @logger.inject_lambda_context(correlation_id_path=correlation_paths.API_GATEWAY_REST)
+@logger.inject_lambda_context(correlation_id_path=correlation_paths.API_GATEWAY_REST)
 def lambda_handler(event: dict, context: LambdaContext) -> dict:
     return app.resolve(event, context)
