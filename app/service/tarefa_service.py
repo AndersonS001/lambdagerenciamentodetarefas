@@ -1,6 +1,11 @@
 from http import HTTPStatus
 import json
-from repository.db import cria_tarefa, deleta_tarefa_por_id, obtem_todas_tarefas
+from repository.db import (
+    atualiza_tarefa,
+    cria_tarefa,
+    deleta_tarefa_por_id,
+    obtem_todas_tarefas,
+)
 from aws_lambda_powertools.event_handler import (
     Response,
     content_types,
@@ -40,10 +45,26 @@ class tarefa_service:
         )
 
     def deleta_tarefa(id):
-        
         deleta_tarefa_por_id(id=id)
 
         return Response(
-                status_code=HTTPStatus.NO_CONTENT.value,
-                content_type=content_types.APPLICATION_JSON
-            )
+            status_code=HTTPStatus.NO_CONTENT.value,
+            content_type=content_types.APPLICATION_JSON,
+        )
+
+    def atualiza_tarefa(id, tarefa):
+        tarefa = json.loads(tarefa)
+        result = atualiza_tarefa(id=id, tarefa=tarefa)
+
+        retorno = {
+            "id": result[0],
+            "tarefa": result[1],
+            "data": result[3],
+            "status": result[5],
+        }
+
+        return Response(
+            status_code=HTTPStatus.OK.value,
+            content_type=content_types.APPLICATION_JSON,
+            body=retorno,
+        )

@@ -31,12 +31,11 @@ cursor.execute("INSERT INTO TB_STATUS(NOME_STATUS) VALUES ('CANCELADO')")
 # cursor.execute("INSERT INTO TB_GERENCIAMENTO(DESCRICAO, ID_STATUS, DATA) VALUES ('OI', 1, '01/01/2000')")
 connection.commit()
 
+
 def insere_status(status):
     try:
-        cursor.execute(
-            "INSERT INTO TB_STATUS (NOME_STATUS) VALUES (?)", (status,)
-        )
-    
+        cursor.execute("INSERT INTO TB_STATUS (NOME_STATUS) VALUES (?)", (status,))
+
         return obtem_status_by_name(status=status)[0]
     except:
         raise
@@ -44,13 +43,12 @@ def insere_status(status):
 
 def obtem_todos_status():
     try:
-        rows = cursor.execute(
-            "SELECT * FROM TB_STATUS", ()
-        ).fetchall()
+        rows = cursor.execute("SELECT * FROM TB_STATUS", ()).fetchall()
 
         return rows
     except:
         raise
+
 
 def lista_status_por_id(id):
     try:
@@ -75,6 +73,7 @@ def obtem_status_by_name(status):
     except:
         raise
 
+
 def deleta_status_por_id(id):
     try:
         rows = cursor.execute(
@@ -91,12 +90,14 @@ def obtem_todas_tarefas():
             """SELECT * FROM TB_GERENCIAMENTO G
                 INNER JOIN TB_STATUS S
                 ON G.ID_STATUS = S.ID_STATUS
-            """, ()
+            """,
+            (),
         ).fetchall()
 
         return rows
     except:
         raise
+
 
 def obtem_tarefa_por_id(id):
     try:
@@ -105,25 +106,29 @@ def obtem_tarefa_por_id(id):
                 INNER JOIN TB_STATUS S
                 ON G.ID_STATUS = S.ID_STATUS
                 WHERE G.ID = ?
-            """, (id,)
+            """,
+            (id,),
         ).fetchone()
 
         return rows
     except Exception as e:
         raise
 
+
 def cria_tarefa(tarefa):
     try:
-        cursor = connection.cursor()
-
-        id_status = obtem_status_by_name("CRIADO")[0][0]
+        id_status = obtem_status_by_name(tarefa.get("status"))[0][0]
 
         cursor.execute(
-            "INSERT INTO TB_GERENCIAMENTO (DESCRICAO, ID_STATUS, DATA) VALUES (?, ?, ?)", (tarefa.get("descricao"), id_status, tarefa.get("data"),)
+            "INSERT INTO TB_GERENCIAMENTO (DESCRICAO, ID_STATUS, DATA) VALUES (?, ?, ?)",
+            (
+                tarefa.get("descricao"),
+                id_status,
+                tarefa.get("data"),
+            ),
         )
         id = cursor.lastrowid
         connection.commit()
-        
 
         return obtem_tarefa_por_id(id=id)
     except Exception as e:
@@ -135,3 +140,26 @@ def deleta_tarefa_por_id(id):
         cursor.execute("DELETE FROM TB_GERENCIAMENTO WHERE ID = ?", (id,))
     except Exception as e:
         raise
+
+
+def atualiza_tarefa(id, tarefa):
+    try:
+        id_status = obtem_status_by_name(tarefa.get("status"))[0][0]
+
+        cursor.execute(
+            """UPDATE TB_GERENCIAMENTO 
+                       SET DESCRICAO = ?,
+                       DATA = ?,
+                       ID_STATUS = ?                       
+                       WHERE ID = ?""",
+            (
+                tarefa.get("descricao"),
+                tarefa.get("data"),
+                id_status,
+                id,
+            ),
+        )
+
+        return obtem_tarefa_por_id(id=id)
+    except Exception as e:
+        raise e
